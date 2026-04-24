@@ -1,0 +1,63 @@
+# keybinds.txt
+
+```text
+nvim ~/.config/hypr/custom/keybinds.conf
+
+
+unbind = SUPER, B
+bind = SUPER, B, exec, brave-origin-nightly
+
+
+unbind = Super, mouse:275
+unbind = Super, mouse:276
+bind = , mouse:275, workspace, e-1
+bind = , mouse:276, workspace, e+1
+
+
+unbind = SUPER, Q bind = SUPER, Q, exec, ~/.config/hypr/scripts/confirm-close.sh
+nvim ~/.config/hypr/scripts/confirm-close.sh
+choice=$(printf "No\nYes" | wofi --dmenu \
+  --prompt "Close window?" \
+  --width 300 --height 120 \
+  --lines 2 --columns 2 \
+  --location center \
+  --style ~/.config/wofi/confirm.css)
+
+[ "$choice" = "Yes" ] && hyprctl dispatch killactive
+mkdir -p ~/.config/wofi
+nvim ~/.config/wofi/confirm.css
+window {
+    margin: 0px;
+    border-radius: 16px;
+    background-color: rgba(20, 20, 20, 0.98);
+    border: 2px solid rgba(255,255,255,0.06);
+}
+
+#input {
+    margin: 10px;
+    border-radius: 10px;
+    padding: 8px;
+    background-color: rgba(255,255,255,0.08);
+    color: #ffffff;
+}
+
+#inner-box {
+    margin: 10px;
+}
+
+#entry {
+    padding: 10px;
+    margin: 6px;
+    border-radius: 10px;
+    background-color: rgba(255,255,255,0.08);
+    color: #ffffff;
+}
+
+#entry:selected {
+    background-color: rgba(255,255,255,0.18);
+}
+
+#text {
+    text-align: center;
+}
+```
