@@ -3,18 +3,26 @@
 ```text
 nvim ~/.config/hypr/custom/keybinds.conf
 
-
 unbind = SUPER, B
 bind = SUPER, B, exec, brave-origin-nightly
 
-
 unbind = Super, mouse:275
 unbind = Super, mouse:276
+
 bind = , mouse:275, workspace, e-1
 bind = , mouse:276, workspace, e+1
 
+unbind = mouse:274
+bind = , mouse:274, exec, ydotool key 29:1 15:1 15:0 && sleep 0.3 && ydotool key 29:0
 
-unbind = SUPER, Q bind = SUPER, Q, exec, ~/.config/hypr/scripts/confirm-close.sh
+unbind = SUPER, Q 
+bind = SUPER, Q, exec, ~/.config/hypr/scripts/confirm-close.sh
+
+unbind = ALT, F4 
+
+unbind = Super, C
+bind = Super, C, exec, code 
+
 nvim ~/.config/hypr/scripts/confirm-close.sh
 choice=$(printf "No\nYes" | wofi --dmenu \
   --prompt "Close window?" \
