@@ -1,6 +1,6 @@
 # fish.txt
 
-```text
+
 nvim ~/.config/fish/config.fish
 
 set -g fish_greeting ""
@@ -38,4 +38,3 @@ function fish_prompt
     set_color normal
     echo -n " "
 end
-```

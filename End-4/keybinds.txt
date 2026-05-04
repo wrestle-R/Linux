@@ -1,6 +1,4 @@
-# keybinds.txt
 
-```text
 nvim ~/.config/hypr/custom/keybinds.conf
 
 unbind = SUPER, B
@@ -68,4 +66,3 @@ window {
 #text {
     text-align: center;
 }
-```
