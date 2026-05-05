@@ -1829,7 +1829,11 @@ if [[ -z "${raw_text//[[:space:]]/}" ]]; then
     exit 0
 fi
 
-groq_api_key='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'
+groq_api_key="${GROQ_API_KEY:-}"
+if [[ -z "$groq_api_key" ]]; then
+    printf '%s\n' "$raw_text"
+    exit 0
+fi
 endpoint='https://api.groq.com/openai/v1/chat/completions'
 system_prompt='You are given a raw speech transcription.
 Fix punctuation, capitalization, and spacing only.
