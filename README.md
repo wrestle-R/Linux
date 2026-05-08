@@ -7,6 +7,10 @@ Personal Linux setup notes for Hyprland and Fish shell.
 - `End-4/keybinds.txt`: Hyprland keybind and Wofi confirm-close snippets.
 - `End-4/fish.txt`: Fish shell prompt and greeting config snippets.
 
+## Wallpapers
+
+All files in the `Wallpaper/` directory are maintained in `1920x1200` format.
+
 ## Custom Sidebar
 
 ![Sidebar preview](CustomSidebar/image.png)
