@@ -10,6 +10,9 @@ unbind = Super, mouse:276
 bind = , mouse:275, workspace, e-1
 bind = , mouse:276, workspace, e+1
 
+unbind = SUPER, X
+bind = SUPER, X, exec, env CODEX_HOME=$HOME/.codex-cursor cursor --user-data-dir ~/.cursor-free
+
 unbind = mouse:274
 bind = , mouse:274, exec, ydotool key 29:1 15:1 15:0 && sleep 0.3 && ydotool key 29:0
 
