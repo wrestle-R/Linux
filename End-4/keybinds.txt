@@ -1,38 +1,44 @@
+nvim ~/.config/hypr/custom/keybinds.lua
 
-nvim ~/.config/hypr/custom/keybinds.conf
+hl.bind("CTRL+SUPER+ALT+Slash", hl.dsp.exec_cmd("xdg-open ~/.config/hypr/custom/keybinds.lua"), {description = "Edit user keybinds"})
 
-unbind = SUPER, B
-bind = SUPER, B, exec, brave-origin-nightly
+hl.bind("SUPER + B", hl.dsp.exec_cmd("brave-origin-nightly"), {description = "Brave Nightly"})
 
-unbind = Super, mouse:275
-unbind = Super, mouse:276
+hl.bind("mouse:275", hl.dsp.focus({workspace = "e-1"}))
+hl.bind("mouse:276", hl.dsp.focus({workspace = "e+1"}))
 
-bind = , mouse:275, workspace, e-1
-bind = , mouse:276, workspace, e+1
+hl.bind("SUPER + X", hl.dsp.exec_cmd("env CODEX_HOME=$HOME/.codex-cursor cursor --user-data-dir ~/.cursor-free"), {description = "Cursor (separate profile)"})
 
-unbind = SUPER, X
-bind = SUPER, X, exec, env CODEX_HOME=$HOME/.codex-cursor cursor --user-data-dir ~/.cursor-free
+hl.bind("mouse:274", hl.dsp.exec_cmd("ydotool key 29:1 15:1 15:0 && sleep 0.3 && ydotool key 29:0"), {mouse = true})
 
-unbind = mouse:274
-bind = , mouse:274, exec, ydotool key 29:1 15:1 15:0 && sleep 0.3 && ydotool key 29:0
+hl.bind("SUPER + Q", hl.dsp.exec_cmd("$HOME/.config/hypr/custom/scripts/confirm-close.sh"), {description = "Confirm before closing"})
 
-unbind = SUPER, Q 
-bind = SUPER, Q, exec, ~/.config/hypr/scripts/confirm-close.sh
+hl.bind("ALT + F4", function() end, {non_consuming = false})
 
-unbind = ALT, F4 
+hl.bind("SUPER + C", hl.dsp.exec_cmd("code"), {description = "VS Code"})
 
-unbind = Super, C
-bind = Super, C, exec, code 
+hl.bind("SUPER + A", function() end)
+hl.bind("SUPER + O", function() end)
+hl.bind("SUPER + mouse:275", function() end)
+hl.bind("SUPER + mouse_up", function() end)
+hl.bind("SUPER + mouse_down", function() end)
 
-nvim ~/.config/hypr/scripts/confirm-close.sh
+nvim ~/.config/hypr/custom/scripts/confirm-close.sh
+#!/usr/bin/env bash
+
+target_pid="$(hyprctl -j activewindow | jq -r '.pid // empty')"
+
 choice=$(printf "No\nYes" | wofi --dmenu \
   --prompt "Close window?" \
   --width 300 --height 120 \
   --lines 2 --columns 2 \
   --location center \
-  --style ~/.config/wofi/confirm.css)
+  --style "$HOME/.config/wofi/confirm.css")
 
-[ "$choice" = "Yes" ] && hyprctl dispatch killactive
+if [ "$choice" = "Yes" ] && [ -n "$target_pid" ] && [ "$target_pid" != "null" ]; then
+  kill -TERM "$target_pid" 2>/dev/null || true
+fi
+
 mkdir -p ~/.config/wofi
 nvim ~/.config/wofi/confirm.css
 window {
@@ -64,8 +70,4 @@ window {
 
 #entry:selected {
     background-color: rgba(255,255,255,0.18);
-}
-
-#text {
-    text-align: center;
 }
