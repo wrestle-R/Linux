@@ -43,4 +43,5 @@ nvim ~/.config/hypr/custom/keybinds.conf
 nvim ~/.config/hypr/scripts/confirm-close.sh
 nvim ~/.config/wofi/confirm.css
 nvim ~/.config/fish/config.fish
+chmod +x ~/.config/hypr/custom/scripts/confirm-close.sh
 ```
