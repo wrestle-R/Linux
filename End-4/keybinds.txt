@@ -29,6 +29,8 @@ hl.bind("SUPER + O", function() end)
 hl.bind("SUPER + mouse:275", function() end)
 hl.bind("SUPER + mouse_up", function() end)
 hl.bind("SUPER + mouse_down", function() end)
+hl.bind("SUPER + H", hl.dsp.exec_cmd("~/.local/bin/hyprtrack-desktop.AppImage"))
+
 
 nvim ~/.config/hypr/custom/scripts/confirm-close.sh
 #!/usr/bin/env bash
