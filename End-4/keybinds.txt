@@ -17,7 +17,17 @@ hl.bind("SUPER + Space", hl.dsp.exec_cmd("$HOME/.local/bin/multi-codex.AppImage"
 hl.bind("mouse:274", hl.dsp.exec_cmd("ydotool key 29:1 15:1 15:0 && sleep 0.3 && ydotool key 29:0"), {mouse = true})
 
 hl.unbind("SUPER + Q")
-hl.bind("SUPER + Q", hl.dsp.exec_cmd("$HOME/.config/hypr/custom/scripts/confirm-close.sh"), {description = "Confirm before closing"})
+hl.bind("SUPER + Q", function()
+    local window = hl.get_active_window()
+    if not window then return end
+    hl.dispatch(hl.dsp.exec_cmd(string.format(
+        '"$HOME/.config/hypr/custom/scripts/confirm-close.sh" %s %d %d',
+        window.address, window.pid, window.stable_id
+    )))
+end, {description = "Confirm before closing"})
+
+hl.unbind("SUPER + SHIFT + Q")
+hl.bind("SUPER + SHIFT + Q", hl.dsp.exec_cmd('"$HOME/.config/hypr/custom/scripts/restore-closed.sh"'), {description = "Reopen last closed app"})
 
 hl.bind("ALT + F4", function() end, {non_consuming = false})
 
@@ -35,72 +45,7 @@ hl.bind("SUPER + mouse_down", function() end)
 hl.bind("SUPER + H", hl.dsp.exec_cmd("~/.local/bin/hyprtrack-desktop.AppImage"))
 
 
-nvim ~/.config/hypr/custom/scripts/confirm-close.sh
-#!/usr/bin/env bash
-
-choice=$(printf "No\nYes" | wofi --dmenu \
-  --prompt "" \
-  --width 260 \
-  --height 80 \
-  --lines 1 \
-  --columns 2 \
-  --hide-scroll \
-  --location center \
-  --style "$HOME/.config/wofi/confirm.css")
-
-if [ "$choice" = "Yes" ]; then
-  hyprctl dispatch 'hl.dsp.window.close()'
-fi
-
-mkdir -p ~/.config/wofi
-nvim ~/.config/wofi/confirm.css
-window {
-    background-color: rgba(17, 17, 20, 0.96);
-    border-radius: 18px;
-    border: 1px solid rgba(255,255,255,0.06);
-}
-
-#outer-box {
-    padding: 14px;
-}
-
-#input {
-    opacity: 0;
-    min-height: 0px;
-    max-height: 0px;
-    margin: 0px;
-    padding: 0px;
-    border: none;
-}
-
-#inner-box {
-    spacing: 12px;
-}
-
-#entry {
-    min-width: 90px;
-    padding: 14px 0px;
-    margin: 0px;
-    border-radius: 14px;
-    background-color: rgba(255,255,255,0.05);
-}
-
-#entry:selected {
-    background-color: rgba(255,255,255,0.14);
-}
-
-#text {
-    color: #e8e8e8;
-    font-size: 14px;
-    margin: 0px;
-    padding: 0px;
-}
-
-#text:selected {
-    color: #ffffff;
-}
-
-#entry box {
-    justify-content: center;
-    align-items: center;
-}
+# Copy confirm-close.sh, restore-closed.sh, window-close.py and confirm-close.qml
+# from this directory into ~/.config/hypr/custom/scripts/.
+# Add confirm-close-rules.lua to ~/.config/hypr/custom/rules.lua.
+# See README.md for installation and verification commands.
