@@ -15,27 +15,34 @@ All files in the `Wallpaper/` directory are maintained in `1920x1200` format.
 
 ## Recordly
 
-Super+R opens Recordly. Click the folder/import button in the recording controls
-and select an MP4 to open the full editor with its preview and timeline. If the
-editor is already open, use the folder button to import another video.
+Super+R shows a video picker, then opens the selected video in Recordly's full
+editor with its preview and timeline. If an editor is already open, Super+R
+brings it forward; use its folder button to import another video. Canceling the
+picker leaves your apps unchanged.
 
-The keybind clears `ELECTRON_RUN_AS_NODE` so launches from an Electron editor
-start the GUI, and selects X11 through XWayland to avoid the native Wayland
-rendering problem on this setup. Keep GPU acceleration enabled for the preview.
-The `recordly` command must be installed and available on PATH.
+Install the launcher into both config copies:
 
 ```bash
-env -u ELECTRON_RUN_AS_NODE recordly --ozone-platform=x11
-```
-
-The binding is kept in `~/.config/hypr/custom/keybinds.lua`,
-`~/Desktop/dots-hyprland/dots/.config/hypr/custom/keybinds.lua`, and
-`End-4/keybinds.txt`. After updating the live config:
-
-```bash
+install -m 755 End-4/recordly-editor.sh ~/.config/hypr/custom/scripts/
+install -m 755 End-4/recordly-editor.sh ~/Desktop/dots-hyprland/dots/.config/hypr/custom/scripts/
 hyprctl reload config-only
 hyprctl configerrors
 ```
+
+The launcher requires `recordly`, `kdialog`, Python 3, and `flock`. It clears
+`ELECTRON_RUN_AS_NODE` and uses XWayland with GPU acceleration enabled for the
+preview. It uses Recordly 1.4's `RECORDLY_DEV_OPEN_RECORDING_INPUT` entry point
+and a separate `~/.config/Recordly-editor` profile so an existing recorder does
+not intercept the editor launch. Recheck this entry point after app updates.
+
+To open a specific video when no editor is open:
+
+```bash
+~/.config/hypr/custom/scripts/recordly-editor.sh /path/to/video.mp4
+```
+
+The binding is synced in the live custom `keybinds.lua`, the dots-hyprland copy,
+and `End-4/keybinds.txt`.
 
 ## Close Confirmation
 
