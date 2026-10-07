@@ -13,6 +13,30 @@ Personal Linux setup notes for Hyprland and Fish shell.
 
 All files in the `Wallpaper/` directory are maintained in `1920x1200` format.
 
+## Recordly
+
+Super+R opens Recordly. Click the folder/import button in the recording controls
+and select an MP4 to open the full editor with its preview and timeline. If the
+editor is already open, use the folder button to import another video.
+
+The keybind clears `ELECTRON_RUN_AS_NODE` so launches from an Electron editor
+start the GUI, and selects X11 through XWayland to avoid the native Wayland
+rendering problem on this setup. Keep GPU acceleration enabled for the preview.
+The `recordly` command must be installed and available on PATH.
+
+```bash
+env -u ELECTRON_RUN_AS_NODE recordly --ozone-platform=x11
+```
+
+The binding is kept in `~/.config/hypr/custom/keybinds.lua`,
+`~/Desktop/dots-hyprland/dots/.config/hypr/custom/keybinds.lua`, and
+`End-4/keybinds.txt`. After updating the live config:
+
+```bash
+hyprctl reload config-only
+hyprctl configerrors
+```
+
 ## Close Confirmation
 
 ![Close confirmation](End-4/confirm-close-preview.png)
