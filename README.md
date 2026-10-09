@@ -13,36 +13,20 @@ Personal Linux setup notes for Hyprland and Fish shell.
 
 All files in the `Wallpaper/` directory are maintained in `1920x1200` format.
 
-## Recordly
+## Cap
 
-Super+R shows a video picker, then opens the selected video in Recordly's full
-editor with its preview and timeline. If an editor is already open, Super+R
-brings it forward; use its folder button to import another video. Canceling the
-picker leaves your apps unchanged.
-
-Install the launcher into both config copies:
+Super+R opens the installed [Cap](https://cap.so) desktop app using its
+`Cap.desktop` launcher. The binding is synced in the live custom `keybinds.lua`,
+the dots-hyprland copy, and `End-4/keybinds.txt`.
 
 ```bash
-install -m 755 End-4/recordly-editor.sh ~/.config/hypr/custom/scripts/
-install -m 755 End-4/recordly-editor.sh ~/Desktop/dots-hyprland/dots/.config/hypr/custom/scripts/
+env -u ELECTRON_RUN_AS_NODE GDK_BACKEND=x11 gtk-launch Cap
 hyprctl reload config-only
 hyprctl configerrors
 ```
 
-The launcher requires `recordly`, `kdialog`, Python 3, and `flock`. It clears
-`ELECTRON_RUN_AS_NODE` and uses XWayland with GPU acceleration enabled for the
-preview. It uses Recordly 1.4's `RECORDLY_DEV_OPEN_RECORDING_INPUT` entry point
-and a separate `~/.config/Recordly-editor` profile so an existing recorder does
-not intercept the editor launch. Recheck this entry point after app updates.
-
-To open a specific video when no editor is open:
-
-```bash
-~/.config/hypr/custom/scripts/recordly-editor.sh /path/to/video.mp4
-```
-
-The binding is synced in the live custom `keybinds.lua`, the dots-hyprland copy,
-and `End-4/keybinds.txt`.
+The Cap desktop launcher must be installed in your applications directory.
+`GDK_BACKEND=x11` uses XWayland so the Cap window displays correctly on this setup.
 
 ## Close Confirmation
 
