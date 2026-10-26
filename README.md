@@ -77,28 +77,109 @@ hyprctl configerrors
 
 ## Custom Sidebar
 
-![Sidebar preview](CustomSidebar/image.png)
+Super+A opens a compact HyprTrack summary and to-do list at the original sidebar
+width. It shows today's usage, the daily average for active days in the last seven
+days, and a seven-day line chart. The app arrow opens HyprTrack; summary reads do
+not launch it or modify its code. Tasks share the shell's existing saved list.
+The task input focuses when the drawer opens, so start typing and press Enter to
+create a task. The original HyprTrack logo is kept.
 
-The left sidebar was turned into a compact clipboard and speaking workflow with:
+Source, data definitions, installation and restore instructions are in
+[End-4/sidebar/README.md](End-4/sidebar/README.md). A matching package lives in
+the dotfiles repo's `dots/.config/hypr/custom/sidebar/` directory. The older
+`CustomSidebar/` files describe a previous clipboard/speaking design.
 
-- An icon-only rail for Clipboard, Pinned, Images, and Transcribed.
-- Clipboard search, pinning, delete actions, and full-message hover previews.
-- Speaking controls with mic selection, pause/resume, and Clean/Raw transcription modes.
+## Clipboard Paste
 
-## Update End-4 Dots (Important)
+Super+V opens the existing clipboard picker. Click an item, or select one with
+Up/Down and release Enter, to close the picker and paste into the original window.
+Normal apps use Ctrl+V; recognised terminal apps use Ctrl+Shift+V. The helper sends
+no Enter key. The explicit Copy action still only copies.
 
-Before updating [`end-4/dots-hyprland`](https://github.com/end-4/dots-hyprland), remove your custom Hyprland folder so old overrides do not conflict.
+Each history row also has a pin button. Saved items appear at the top of the same
+clipboard list, followed by recent history. Use the unpin button to remove a pin.
+There are no History/Pinned tabs, and the clipboard view hides Lens and music
+recognition controls. Pins keep their own
+text/image originals in `~/clipboard/pinned/`, so they survive history cleanup
+and shell restarts. Normal history still uses cliphist's existing database.
+
+The **Clear history** button at the top asks for confirmation before clearing the
+entire normal history, regardless of the search filter. Saved pins are kept.
+Cancel is focused by default, and Escape dismisses the confirmation.
+
+The helper checks the original window's address, process ID and stable ID before
+restoring focus. If that window closes or focus changes before pasting, it leaves
+the item copied and shows a notification.
+
+Source, reinstall instructions, terminal support and backup/restore commands are
+in [End-4/clipboard/README.md](End-4/clipboard/README.md). The matching package is
+kept in `dots/.config/hypr/custom/clipboard/` in the dots-hyprland repository.
+
+## Update End-4 Dots
+
+Keep `~/.config/hypr/custom`. Back up the working configuration before updating:
 
 ```bash
-rm -rf ~/.config/hypr/custom
+python3 End-4/clipboard/customizations.py backup
 ```
 
-Then update and reinstall:
+The command prints a private snapshot directory under
+`~/.local/state/hypr-customization-backups/`. Keep that exact path for rollback.
+It includes Hyprland, QuickShell and illogical-impulse settings; treat it as
+private because desktop settings can contain credentials.
+
+Review and save your intended source changes before merging upstream. Keep
+`local-docs/` and real environment files out of commits. In the dotfiles repository:
 
 ```bash
-git pull
-./install.sh
+cd ~/Desktop/dots-hyprland
+git status --short
+git fetch upstream
+git diff --stat HEAD upstream/main
+git merge upstream/main
 ```
+
+Stop if Git reports conflicts. Once the source is merged, check the clipboard
+and sidebar integrations against it before replacing the running configuration:
+
+```bash
+python3 ~/Desktop/code/Linux/End-4/clipboard/customizations.py check --config-root ~/Desktop/dots-hyprland/dots/.config
+python3 ~/Desktop/code/Linux/End-4/sidebar/customizations.py check --config-root ~/Desktop/dots-hyprland/dots/.config
+```
+
+If compatible, review the updated `setup` script and use `./setup install`
+(the old `./install.sh` command was renamed). Preserve existing custom files when
+the installer asks. Keep a terminal open during the update. Afterwards, check and
+reapply both integrations:
+
+```bash
+python3 ~/Desktop/code/Linux/End-4/clipboard/customizations.py check
+python3 ~/Desktop/code/Linux/End-4/sidebar/customizations.py check
+python3 ~/Desktop/code/Linux/End-4/clipboard/customizations.py install
+python3 ~/Desktop/code/Linux/End-4/sidebar/customizations.py install
+hyprctl reload config-only
+hyprctl configerrors
+```
+
+The integration installer checks supported source file versions before writing
+anything, takes another backup, and rolls back its own edits on a write failure.
+If the compatibility check fails, adapt the integration to the new upstream code
+before applying it. Do not force old QuickShell files over new ones. Confirm the
+existing custom bindings and clipboard behaviour still work after reload.
+
+If the update breaks the desktop, restore the saved working snapshot from a
+terminal or TTY, using the exact directory printed by the backup command:
+
+```bash
+python3 ~/Desktop/code/Linux/End-4/clipboard/customizations.py restore --backup /absolute/path/to/saved-snapshot
+hyprctl reload config-only
+hyprctl configerrors
+```
+
+Restore keeps a backup of the configuration it replaces. It restores the saved
+desktop configuration, not installed package versions or Git history. If a package
+upgrade changed Hyprland/QuickShell APIs, the matching package version may also be
+needed. See the clipboard README for reloading QuickShell and a fresh install.
 
 ## Quick Edit Paths
 

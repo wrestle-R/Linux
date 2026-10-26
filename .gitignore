@@ -1,0 +1,7 @@
+
+# Private project memory
+/local-docs/
+
+# Python verification artifacts
+__pycache__/
+*.py[cod]
