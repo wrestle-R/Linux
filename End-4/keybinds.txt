@@ -53,3 +53,7 @@ hl.bind("SUPER + R", hl.dsp.exec_cmd("env -u ELECTRON_RUN_AS_NODE GDK_BACKEND=x1
 # from this directory into ~/.config/hypr/custom/scripts/.
 # Add confirm-close-rules.lua to ~/.config/hypr/custom/rules.lua.
 # See README.md for installation and verification commands.
+
+-- Spotify sidebar launcher (managed integration)
+local spotifyShortcuts = (os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")) .. "/hypr/custom/spotify-shortcuts.lua"
+if is_file_exists(spotifyShortcuts) then dofile(spotifyShortcuts) end

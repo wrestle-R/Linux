@@ -115,6 +115,19 @@ Source, reinstall instructions, terminal support and backup/restore commands are
 in [End-4/clipboard/README.md](End-4/clipboard/README.md). The matching package is
 kept in `dots/.config/hypr/custom/clipboard/` in the dots-hyprland repository.
 
+## Spotify in Super+A
+
+Music controls sit at the bottom of the sidebar: previous, pause/resume, next,
+seeking and **Open player**. Super+S opens Spotify TUI in Kitty, or focuses the
+existing player window. The task input stays below its scrolling list, and the
+usage summary no longer expands while loading.
+
+The official Spotify desktop package was removed after checking independent
+TUI playback. The installed TUI and Soloist remain separate from these desktop
+configs. [Setup, screenshots and recreation steps](End-4/sidebar/SPOTIFY.md)
+cover the release download, browser sign-in, pairing, safe updates and rollback.
+This integration is personal; it does not edit the Spotify-Tui app source.
+
 ## Update End-4 Dots
 
 Keep `~/.config/hypr/custom`. Back up the working configuration before updating:
