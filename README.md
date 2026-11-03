@@ -46,8 +46,8 @@ Tab or arrow keys select a button; Enter or Space activates it. Repeated Super+Q
 presses keep one dialog open. The selected window is captured before the dialog
 opens, so a focus change cannot close another app. The binding in
 `End-4/keybinds.txt` launches `confirm-close.sh` directly with
-`hl.dsp.exec_cmd`; keep it as a dispatcher instead of wrapping it in a Lua
-callback.
+`hl.dsp.exec_cmd`; it also sends QuickShell's Super-release interrupt so the
+app drawer stays closed after this chord. A lone Super tap still opens search.
 
 Super+Shift+Q reopens the one most recently closed app. Only confirmed closes
 through this dialog are remembered. Canceling or failing to close preserves the
