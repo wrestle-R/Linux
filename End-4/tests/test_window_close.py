@@ -55,7 +55,7 @@ class WindowCloseTests(unittest.TestCase):
             expression = command.call_args.args[1]
             self.assertIn('address:0x123abc', expression)
             self.assertIn('w.pid ~= 123', expression)
-            self.assertIn('w.stable_id ~= 99', expression)
+            self.assertIn('tonumber(w.stable_id, 16) ~= 99', expression)
             self.assertNotIn('touch', expression)
 
     def test_repeated_open_keeps_one_dialog(self):
