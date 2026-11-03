@@ -242,3 +242,7 @@ the existing shell customizations and reapply after upstream setup updates.
 opening it after other shortcuts. Keep `super-tap.lua` and its custom keybind
 hook when rebuilding; clipboard and image-states integrations include the
 matching open/close and shared-thumbnail-cache corrections.
+
+### Internet Swap
+
+The Super+A HyprTrack card also has a compact Wi-Fi status row, automatic-switching toggle and app arrow. The separate Tauri app and Next.js website use HyprTrack’s Plum theme with light/dark modes. Rebuild and startup details: [End-4/sidebar/INTERNET-SWAP.md](End-4/sidebar/INTERNET-SWAP.md).
