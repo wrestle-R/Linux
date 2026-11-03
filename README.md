@@ -13,6 +13,14 @@ Personal Linux setup notes for Hyprland and Fish shell.
 
 All files in the `Wallpaper/` directory are maintained in `1920x1200` format.
 
+## Hyprland Shadow Compatibility
+
+This setup runs Hyprland 0.57.0, which accepts `decoration.shadow.render_power`
+values up to 4. Keep the value at `4` in both
+`dots/.config/hypr/hyprland/general.lua` and the installed
+`~/.config/hypr/hyprland/general.lua`. The current end-4 upstream file still
+sets it to `10`, so preserve this local correction when merging upstream.
+
 ## Cap
 
 Super+R opens the installed [Cap](https://cap.so) desktop app using its
@@ -36,7 +44,10 @@ Super+Q opens a small charcoal dialog at 72% opacity with Close selected. Enter
 closes the window immediately. Escape, Cancel, or clicking outside dismisses it.
 Tab or arrow keys select a button; Enter or Space activates it. Repeated Super+Q
 presses keep one dialog open. The selected window is captured before the dialog
-opens, so a focus change cannot close another app.
+opens, so a focus change cannot close another app. The binding in
+`End-4/keybinds.txt` launches `confirm-close.sh` directly with
+`hl.dsp.exec_cmd`; keep it as a dispatcher instead of wrapping it in a Lua
+callback.
 
 Super+Shift+Q reopens the one most recently closed app. Only confirmed closes
 through this dialog are remembered. Canceling or failing to close preserves the
@@ -128,6 +139,18 @@ configs. [Setup, screenshots and recreation steps](End-4/sidebar/SPOTIFY.md)
 cover the release download, browser sign-in, pairing, safe updates and rollback.
 This integration is personal; it does not edit the Spotify-Tui app source.
 
+## Settings and Keybindings
+
+Super+I has five tabs: General, Appearance, Keybindings, Services and Advanced.
+The unused built-in AI controls are removed, and detailed customization controls
+are grouped under Advanced. Keybindings lists active shortcuts and lets you add,
+edit or remove your own app, command and script shortcuts, with conflict checks
+and rollback. Super+W opens Zen through a custom override.
+
+See [End-4/settings/README.md](End-4/settings/README.md) for usage, script editing,
+reinstallation and private shortcut backups. Matching source lives in the dots
+repo's `dots/.config/hypr/custom/settings/` folder.
+
 ## Update End-4 Dots
 
 Keep `~/.config/hypr/custom`. Back up the working configuration before updating:
@@ -152,24 +175,27 @@ git diff --stat HEAD upstream/main
 git merge upstream/main
 ```
 
-Stop if Git reports conflicts. Once the source is merged, check the clipboard
-and sidebar integrations against it before replacing the running configuration:
+Stop if Git reports conflicts. Once the source is merged, check the clipboard,
+sidebar and settings integrations against it before replacing the running configuration:
 
 ```bash
 python3 ~/Desktop/code/Linux/End-4/clipboard/customizations.py check --config-root ~/Desktop/dots-hyprland/dots/.config
 python3 ~/Desktop/code/Linux/End-4/sidebar/customizations.py check --config-root ~/Desktop/dots-hyprland/dots/.config
+python3 ~/Desktop/code/Linux/End-4/settings/customizations.py check --config-root ~/Desktop/dots-hyprland/dots/.config
 ```
 
 If compatible, review the updated `setup` script and use `./setup install`
 (the old `./install.sh` command was renamed). Preserve existing custom files when
 the installer asks. Keep a terminal open during the update. Afterwards, check and
-reapply both integrations:
+reapply all three integrations:
 
 ```bash
 python3 ~/Desktop/code/Linux/End-4/clipboard/customizations.py check
 python3 ~/Desktop/code/Linux/End-4/sidebar/customizations.py check
+python3 ~/Desktop/code/Linux/End-4/settings/customizations.py check
 python3 ~/Desktop/code/Linux/End-4/clipboard/customizations.py install
 python3 ~/Desktop/code/Linux/End-4/sidebar/customizations.py install
+python3 ~/Desktop/code/Linux/End-4/settings/customizations.py install
 hyprctl reload config-only
 hyprctl configerrors
 ```
