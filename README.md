@@ -229,3 +229,16 @@ nvim ~/.config/hypr/custom/scripts/window-close.py
 nvim ~/.config/fish/config.fish
 chmod +x ~/.config/hypr/custom/scripts/confirm-close.sh
 ```
+
+## Image placeholders
+
+Distinct failure, no-image, unknown-app, loading and offline visuals are in
+[End-4/image-states](End-4/image-states/README.md). Install this package after
+the existing shell customizations and reapply after upstream setup updates.
+
+## Super key and clipboard behavior
+
+[Super tap override](End-4/super-tap.md) preserves plain-Super app search without
+opening it after other shortcuts. Keep `super-tap.lua` and its custom keybind
+hook when rebuilding; clipboard and image-states integrations include the
+matching open/close and shared-thumbnail-cache corrections.
