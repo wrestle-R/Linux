@@ -246,3 +246,7 @@ matching open/close and shared-thumbnail-cache corrections.
 ### Internet Swap
 
 The Super+A HyprTrack card also has a compact Wi-Fi status row, automatic-switching toggle and app arrow. The separate Tauri app and Next.js website use HyprTrack’s Plum theme with light/dark modes. Rebuild and startup details: [End-4/sidebar/INTERNET-SWAP.md](End-4/sidebar/INTERNET-SWAP.md).
+
+## Slumber and battery care
+
+Super+Ctrl+L and the notification-panel Start now button lock, show a two-second preview, then switch displays off while work continues. Saved lid behaviour, per-app lock notifications, SDDM wallpaper/animations and configurable charge limits are documented with install, update and rollback steps in [End-4/slumber/README.md](End-4/slumber/README.md). See its verification record for physical checks still pending.
