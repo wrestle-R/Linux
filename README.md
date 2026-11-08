@@ -249,4 +249,8 @@ The Super+A HyprTrack card also has a compact Wi-Fi status row, automatic-switch
 
 ## Slumber and battery care
 
-Super+Ctrl+L and the notification-panel Start now button lock, show a two-second preview, then switch displays off while work continues. Saved lid behaviour, per-app lock notifications, SDDM wallpaper/animations and configurable charge limits are documented with install, update and rollback steps in [End-4/slumber/README.md](End-4/slumber/README.md). See its verification record for physical checks still pending.
+Super+Ctrl+L and the notification-panel play button lock, show a two-second preview, then switch displays off while work continues. Saved lid behaviour, per-app lock notifications, SDDM wallpaper/animations and configurable charge limits are documented with install, update and rollback steps in [End-4/slumber/README.md](End-4/slumber/README.md). See its verification record for physical checks still pending.
+
+## Local screenshot OCR
+
+Super+Shift+X now uses on-demand RapidOCR with the English PP-OCRv5 mobile recognizer and CPU ONNX Runtime. The region selector stays the same; both shell and fallback paths use one helper. Reproduction, offline setup, dependency/model paths, safety checks and Tesseract rollback: [End-4/ocr/README.md](End-4/ocr/README.md). The [14-fixture comparison](End-4/ocr/BENCHMARK.md) includes fresh-process startup, accuracy, spacing limitations and memory.
