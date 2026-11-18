@@ -1,0 +1,183 @@
+diff --git a/start/src/core/Instance.cpp b/start/src/core/Instance.cpp
+index 000cb9b..505b360 100644
+--- a/start/src/core/Instance.cpp
++++ b/start/src/core/Instance.cpp
+@@ -52,6 +52,10 @@ void CHyprlandInstance::runHyprlandThread(bool safeMode, bool lockedCrash) {
+     args.emplace_back(nullptr);
+ 
+     int forkRet = fork();
++    if (forkRet < 0) {
++        g_logger->log(Hyprutils::CLI::LOG_ERR, "fork() failed: {}", strerror(errno));
++        exit(1);
++    }
+     if (forkRet == 0) {
+         // Make hyprland die on our SIGKILL
+ #if defined(__linux__)
+@@ -165,7 +169,7 @@ void CHyprlandInstance::dispatchHyprlandEvent() {
+     }
+ }
+ 
+-bool CHyprlandInstance::run(bool safeMode, bool lockedCrash) {
++bool CHyprlandInstance::run(int shutdownFd, bool safeMode, bool lockedCrash) {
+     int pipefds[2];
+     if (pipe(pipefds) != 0) {
+         g_logger->log(Hyprutils::CLI::LOG_ERR, "pipe() failed, exiting");
+@@ -191,7 +195,7 @@ bool CHyprlandInstance::run(bool safeMode, bool lockedCrash) {
+ 
+     runHyprlandThread(safeMode, lockedCrash);
+ 
+-    pollfd pollfds[2] = {
++    pollfd pollfds[3] = {
+         {
+             .fd      = m_wakeupRead.get(),
+             .events  = POLLIN,
+@@ -202,16 +206,28 @@ bool CHyprlandInstance::run(bool safeMode, bool lockedCrash) {
+             .events  = POLLIN,
+             .revents = 0,
+         },
++        {
++            .fd      = shutdownFd,
++            .events  = POLLIN,
++            .revents = 0,
++        },
+     };
+ 
+     while (true) {
+-        int ret = poll(pollfds, 2, -1);
++        int ret = poll(pollfds, 3, -1);
+ 
+         if (ret < 0) {
++            if (errno == EINTR)
++                continue;
+             g_logger->log(Hyprutils::CLI::LOG_ERR, "poll() failed, exiting");
+             exit(1);
+         }
+ 
++        if (pollfds[2].revents & POLLIN) {
++            forceQuit();
++            return true;
++        }
++
+         if (pollfds[1].revents & POLLIN) {
+             g_logger->log(Hyprutils::CLI::LOG_DEBUG, "got an event from hyprland");
+             dispatchHyprlandEvent();
+diff --git a/start/src/core/Instance.hpp b/start/src/core/Instance.hpp
+index fab7c6e..20ccc46 100644
+--- a/start/src/core/Instance.hpp
++++ b/start/src/core/Instance.hpp
+@@ -14,12 +14,12 @@ class CHyprlandInstance {
+     CHyprlandInstance(CHyprlandInstance&)       = delete;
+     CHyprlandInstance(CHyprlandInstance&&)      = delete;
+ 
+-    bool run(bool safeMode = false, bool lockedCrash = false); // if returns false, restart.
+-    void forceQuit();
++    bool run(int shutdownFd, bool safeMode, bool lockedCrash); // if returns false, restart.
+ 
+     bool m_hyprlandLocked = false;
+ 
+   private:
++    void                           forceQuit();
+     void                           runHyprlandThread(bool safeMode, bool lockedCrash);
+     void                           clearFd(const Hyprutils::OS::CFileDescriptor& fd);
+     void                           dispatchHyprlandEvent();
+@@ -34,5 +34,3 @@ class CHyprlandInstance {
+ 
+     std::thread                    m_hlThread;
+ };
+-
+-inline UP<CHyprlandInstance> g_instance;
+diff --git a/start/src/main.cpp b/start/src/main.cpp
+index f28a04b..c1f65ae 100644
+--- a/start/src/main.cpp
++++ b/start/src/main.cpp
+@@ -1,6 +1,10 @@
++#include <atomic>
++#include <cerrno>
+ #include <csignal>
+ #include <cstring>
+ #include <print>
++#include <fcntl.h>
++#include <unistd.h>
+ 
+ #include "helpers/Logger.hpp"
+ #include "helpers/Nix.hpp"
+@@ -25,25 +29,27 @@ Additional arguments for start-hyprland:
+  --force-nixgl       -> Force enable nixGL
+ )#";
+ 
+-//
+-static void onSignal(int sig) {
+-    if (!g_instance)
+-        return;
+-
+-    g_instance->forceQuit();
+-    g_instance.reset();
+-
+-    exit(0);
++// Signal handlers may run on the worker thread. Only wake the main thread here.
++static_assert(std::atomic<int>::is_always_lock_free);
++static std::atomic<int> shutdownWriteFd{-1};
++
++static void onSignal(int) {
++    const int savedErrno = errno;
++    const char byte = 1;
++    // A full pipe already has a shutdown request waiting.
++    ssize_t result;
++    do {
++        result = write(shutdownWriteFd.load(std::memory_order_relaxed), &byte, sizeof(byte));
++    } while (result < 0 && errno == EINTR);
++    errno = savedErrno;
+ }
+ 
+-static void terminateChildOnSignal(int signal) {
+-    struct sigaction sa;
+-    sa.sa_handler = onSignal;
+-    sigemptyset(&sa.sa_mask);
+-    sa.sa_flags = SA_RESTART;
+-    int ret     = sigaction(signal, &sa, nullptr);
+-    if (ret != 0)
+-        g_logger->log(Hyprutils::CLI::LOG_WARN, "Failed to set up handler for signal {}: {}", signal, strerror(errno));
++static bool installShutdownHandlers() {
++    struct sigaction action{};
++    action.sa_handler = onSignal;
++    sigemptyset(&action.sa_mask);
++    action.sa_flags = SA_RESTART;
++    return sigaction(SIGTERM, &action, nullptr) == 0 && sigaction(SIGINT, &action, nullptr) == 0;
+ }
+ 
+ int main(int argc, const char** argv, const char** envp) {
+@@ -51,8 +57,18 @@ int main(int argc, const char** argv, const char** envp) {
+     g_logger->setName("start-hyprland");
+     g_logger->setLogLevel(Hyprutils::CLI::LOG_DEBUG);
+ 
+-    terminateChildOnSignal(SIGTERM);
+-    terminateChildOnSignal(SIGINT);
++    int shutdownFds[2];
++    if (pipe2(shutdownFds, O_CLOEXEC | O_NONBLOCK) != 0) {
++        g_logger->log(LOG_ERR, "Cannot create shutdown pipe: {}", strerror(errno));
++        return 1;
++    }
++    const Hyprutils::OS::CFileDescriptor shutdownRead{shutdownFds[0]};
++    const Hyprutils::OS::CFileDescriptor shutdownWrite{shutdownFds[1]};
++    shutdownWriteFd.store(shutdownWrite.get(), std::memory_order_relaxed);
++    if (!installShutdownHandlers()) {
++        g_logger->log(LOG_ERR, "Cannot install shutdown handlers: {}", strerror(errno));
++        return 1;
++    }
+ 
+     int startArgv = -1;
+ 
+@@ -105,10 +121,9 @@ int main(int argc, const char** argv, const char** envp) {
+     bool lockedCrash = false;
+ 
+     while (true) {
+-        g_instance     = makeUnique<CHyprlandInstance>();
+-        const bool RET = g_instance->run(safeMode, lockedCrash);
+-        lockedCrash    = g_instance->m_hyprlandLocked;
+-        g_instance.reset();
++        auto instance  = makeUnique<CHyprlandInstance>();
++        const bool RET = instance->run(shutdownRead.get(), safeMode, lockedCrash);
++        lockedCrash    = instance->m_hyprlandLocked;
+ 
+         if (!RET) {
+             g_logger->log(Hyprutils::CLI::LOG_ERR, "Hyprland exit not-cleanly, restarting");

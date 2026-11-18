@@ -13,6 +13,10 @@ Personal Linux setup notes for Hyprland and Fish shell.
 
 All files in the `Wallpaper/` directory are maintained in `1920x1200` format.
 
+## Hyprland watchdog
+
+The local watchdog package fixes the shutdown abort on Arch Hyprland 0.57.2-1. The build, tests, and rollback command are in [End-4/watchdog](End-4/watchdog/README.md).
+
 ## Hyprland Shadow Compatibility
 
 This setup runs Hyprland 0.57.0, which accepts `decoration.shadow.render_power`

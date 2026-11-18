@@ -1,0 +1,6 @@
+#!/bin/sh
+# Prefer the Arch launcher again once this exact affected package is replaced.
+if [ "$(/usr/bin/pacman -Q hyprland 2>/dev/null)" = 'hyprland 0.57.2-1' ]; then
+    exec /usr/lib/rdp-hyprland-watchdog/start-hyprland "$@"
+fi
+exec /usr/bin/start-hyprland "$@"

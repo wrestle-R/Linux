@@ -1,0 +1,54 @@
+pkgname=rdp-hyprland-watchdog
+pkgver=0.57.2
+pkgrel=1
+pkgdesc='Local shutdown fix for the Arch Hyprland 0.57.2-1 watchdog'
+arch=(x86_64)
+url='https://github.com/hyprwm/Hyprland'
+license=(BSD-3-Clause)
+depends=(hyprland hyprutils libstdc++)
+makedepends=(cmake ninja pkgconf)
+checkdepends=(python)
+options=(!debug)
+_commit=11cbc6c577b84ffb1edf4df3fc5b6128c3ae6947
+_glaze=7.2.0
+source=(
+  "Hyprland-$_commit.tar.gz::https://codeload.github.com/hyprwm/Hyprland/tar.gz/$_commit"
+  "glaze-$_glaze.tar.gz::https://codeload.github.com/stephenberry/glaze/tar.gz/refs/tags/v$_glaze"
+  shutdown-on-main-thread.patch
+  test-watchdog.py
+  launch
+  hyprland.desktop
+)
+
+prepare() {
+  cd "$srcdir/Hyprland-$_commit"
+  patch -Np1 -i "$srcdir/shutdown-on-main-thread.patch"
+}
+
+build() {
+  cmake -S "$srcdir/Hyprland-$_commit/start" -B "$srcdir/build" -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON \
+    -DFETCHCONTENT_SOURCE_DIR_GLAZE="$srcdir/glaze-$_glaze" \
+    -DCMAKE_DISABLE_FIND_PACKAGE_glaze=ON -DPython3_EXECUTABLE=/usr/bin/python3
+  cmake --build "$srcdir/build"
+}
+
+check() {
+  ctest --test-dir "$srcdir/build" --output-on-failure
+  python3 "$srcdir/test-watchdog.py" "$srcdir/build/start-hyprland"
+}
+
+package() {
+  install -Dm755 "$srcdir/build/start-hyprland" "$pkgdir/usr/lib/$pkgname/start-hyprland"
+  install -Dm755 "$srcdir/launch" "$pkgdir/usr/lib/$pkgname/launch"
+  install -Dm644 "$srcdir/hyprland.desktop" "$pkgdir/usr/local/share/wayland-sessions/hyprland.desktop"
+  install -Dm644 "$srcdir/Hyprland-$_commit/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+sha256sums=(
+  645d6def782975b8d99c3400e3b72576e084dcc33d0458a4a17f3fe536340d9e
+  17dba19ae63ae48f94994f00d49d5cb3c8f1306db1046c534c4828662490b7d4
+  856134e0289e90844d300eaab90238bfcfc758602cfc580bf6df57bfe9c91a4a
+  88dfab19de0a74af8504f2da36717fb26063dd1beed42a1e09ddfe424b8ef884
+  d9bb48961e4ec91e0417ef1c4e12317fa34ae22b2fc0869984ef50b0784b74f2
+  85974378ef4f1408cb3a16dfd6b4f12bbe9e9c44af5307d2368be6623e5664ef
+)

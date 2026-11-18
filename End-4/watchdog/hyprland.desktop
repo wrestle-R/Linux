@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Hyprland
+Comment=An intelligent dynamic tiling Wayland compositor
+Exec=/usr/lib/rdp-hyprland-watchdog/launch
+TryExec=/usr/lib/rdp-hyprland-watchdog/launch
+Type=Application
+DesktopNames=Hyprland
+Keywords=tiling;wayland;compositor;
