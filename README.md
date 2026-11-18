@@ -249,7 +249,7 @@ The Super+A HyprTrack card also has a compact Wi-Fi status row, automatic-switch
 
 ## Slumber and battery care
 
-Super+Ctrl+L and the notification-panel play button lock, show a two-second preview, then switch displays off while work continues. Saved lid behaviour, per-app lock notifications, SDDM wallpaper/animations and configurable charge limits are documented with install, update and rollback steps in [End-4/slumber/README.md](End-4/slumber/README.md). See its verification record for physical checks still pending.
+Super+Ctrl+L and the notification-panel play button lock, show a two-second preview, then switch displays off while work continues. Saved lid behaviour, per-app lock notifications, the SDDM wallpaper and login layout and configurable charge limits are documented with install, update and rollback steps in [End-4/slumber/README.md](End-4/slumber/README.md). See its verification record for physical checks still pending.
 
 ## Local screenshot OCR
 
